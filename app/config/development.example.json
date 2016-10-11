@@ -1,0 +1,11 @@
+{
+  "host": "http://localhost://3000",
+  "dbURI": "xxxxx",
+  "sessionSecret": "xxxxxx",
+  "fb": {
+    "clientID": "xxxxxxxxxxxx",
+    "clientSecret": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "callbackURL": "//localhost://3000/auth/facebook/callback",
+    "profileFields": ["id", "displayName", "photos"]
+  }
+}
