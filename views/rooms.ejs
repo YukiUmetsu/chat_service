@@ -5,6 +5,16 @@
 	<title>ChatCat - Rooms</title>
 	<link rel="stylesheet" href="/css/roomsStyles.css">
 	<script src="/js/jquery-2.1.4.min.js"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script>
+		'use strict';
+		$(() => {
+			let socket = io('http://localhost:3000/roomslist');
+			socket.on('connect', () =>{
+				console.log('Connected to Server!');
+			});
+		})
+	</script>
 </head>
 <body>
 	<div class="container">
@@ -14,7 +24,7 @@
 		<div class="controls">
 			<div class="userPicHolder"><img src="<%= user.profilePic %>" alt="John Doe"></div>
 			<p class="userName"><%= user.fullName %></p>
-			<a href="login.ejs" id="logOutBtn">Logout</a>
+			<a href="/logout" id="logOutBtn">Logout</a>
 		</div>
 		<div class="controls">
 			<input type="text" name="roomName" placeholder="Create a new Chatroom">

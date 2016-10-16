@@ -66,9 +66,19 @@ let findById = (id) => {
   });
 };
 
+// check if user is logged in or not
+let isAuthenticated = (req, res, next) => {
+  if (req.isAuthenticated()){
+    next();
+  } else {
+    res.redirect('/');
+  }
+};
+
 module.exports = {
   route,
   findOne,
   createNewUser,
-  findById
+  findById,
+  isAuthenticated
 };

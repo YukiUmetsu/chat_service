@@ -16,4 +16,4 @@ app.use(passport.session());
 // Include Router from /app/index
 app.use('/', chatCat.router);
 
-app.listen(app.get('port'), () => console.log('check out port', app.get('port')));
+chatCat.ioServer(app).listen(app.get('port'), () => console.log('check out port', app.get('port')));
