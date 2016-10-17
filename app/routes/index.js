@@ -2,16 +2,23 @@
 const router = require('express').Router();
 const passport = require('passport');
 const helper = require('../helpers');
+const config = require('../config');
 
 module.exports = () => {
     let routes = {
         'get': {
             '/': (req, res, next) => res.render('login'),
             '/rooms': [ helper.isAuthenticated,
-                (req, res, next) => res.render('rooms', {user: req.user})
+                (req, res, next) => res.render('rooms', {
+                    user: req.user,
+                    host: config.host
+                })
             ],
             '/chat': [helper.isAuthenticated,
-                (req, res, next) => res.render('chatroom', {user: req.user})
+                (req, res, next) => res.render('chatroom', {
+                    user: req.user,
+                    host: config.host
+                })
             ],
             '/auth/facebook': passport.authenticate('facebook'),
             '/auth/facebook/callback': passport.authenticate('facebook', {
