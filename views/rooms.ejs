@@ -10,6 +10,8 @@
 		'use strict';
 		$(() => {
 			let socket = io('<%= host %>' + '/roomslist');
+			let newRoomInput = $("input[name='roomName']");
+
 			let renderChatRooms = chatrooms => {
 				let roomsListDiv = $('#roomsListUL');
 				let listStr = '';
@@ -24,6 +26,14 @@
 			// Listen to chatRoomsList from server and receive chatrooms info
 			socket.on('chatRoomsList', chatrooms => {
 				renderChatRooms(JSON.parse(chatrooms));
+			});
+
+			// create rooms
+			$('#createBtn').on('click', () =>{
+				if (newRoomInput.val() !== ''){
+					socket.emit('createNewRoom', newRoomInput.val());
+					newRoomInput.val('');
+				}
 			});
 		})
 	</script>
