@@ -28,9 +28,10 @@
 				renderChatRooms(JSON.parse(chatrooms));
 			});
 
-			// create rooms
+			// create a room
 			$('#createBtn').on('click', () =>{
 				if (newRoomInput.val() !== ''){
+					// emit a createNewRoom event
 					socket.emit('createNewRoom', newRoomInput.val());
 					newRoomInput.val('');
 				}

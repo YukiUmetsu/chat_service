@@ -88,10 +88,59 @@ let findRoomByName = (allrooms, room) => {
   });
 };
 
+// find room that has the same id
+let findRoomById = (allrooms, roomID) => {
+  return allrooms.find((element, index, array) => {
+    if(element.roomID === roomID){
+      return true;
+    } else{
+      return false;
+    }
+  });
+};
+
 // Function that returns a random room ID
 let randomHex = () => {
   return crypto.randomBytes(24).toString('hex');
-}
+};
+
+// add user to a chat room
+let addUserToRoom = (allrooms, data, socket) => {
+  // get room object
+  let getRoom = findRoomById(allrooms, data.roomID);
+  if(getRoom !== undefined){
+    let userID = socket.request.session.passport.user;
+
+    // check if this user already exists in the room
+    let checkUser = getRoom.users.findIndex((element, index, array)=>{
+      if(element.userID === userID){
+        return true;
+      } else {
+        return false;
+      }
+    });
+
+    // if user already exists in the chatroom, remove the user
+    if (checkUser > -1){
+      getRoom.users.splice(checkUser, 1);
+    }
+
+    // push the user into the room's user array
+    getRoom.users.push({
+      socketID: socket.id,
+      userID,
+      user: data.user,
+      userPic: data.userPic
+    });
+
+    // join the room channel
+    socket.join(data.roomID);
+
+    // return the updated room object
+    return getRoom;
+  }
+};
+
 
 module.exports = {
   route,
@@ -100,5 +149,7 @@ module.exports = {
   findById,
   isAuthenticated,
   findRoomByName,
-  randomHex
+  findRoomById,
+  randomHex,
+  addUserToRoom
 };

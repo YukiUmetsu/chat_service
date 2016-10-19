@@ -13,7 +13,7 @@ module.exports = (io, app) => {
       socket.emit('chatRoomsList', JSON.stringify(allrooms));
     });
 
-    // create a room
+    // create a room, listen to createNewRoom event from rooms.ejs
     socket.on('createNewRoom', newRoomInput => {
       // check if the same title chatroom exists or not
       if (!helpers.findRoomByName(allrooms, newRoomInput)){
@@ -24,10 +24,22 @@ module.exports = (io, app) => {
         });
 
         // Emit an updated list to the creator
-        socket.emit('chatRoomList', JSON.stringify(allrooms));
+        socket.emit('chatRoomsList', JSON.stringify(allrooms));
         // Emit an updated list to everyone connected to the rooms page
-        socket.broadcast.emit('chatRoomList', JSON.stringify(allrooms));
+        socket.broadcast.emit('chatRoomsList', JSON.stringify(allrooms));
       }
+    });
+  });
+
+  io.of('/chatter').on('connection', socket => {
+    // listen to join event, and join a chat room
+    socket.on('join', data => {
+      let userList = helpers.addUserToRoom(allrooms, data, socket);
+
+      // update the list of active users
+      socket.emit('updateUsersList', JSON.stringify(userList.users));
+      // update the list of active users to everyone in the room
+      socket.broadcast.to(data.roomID).emit('updateUsersList', JSON.stringify(userList.users)) ;
     });
   });
 };
