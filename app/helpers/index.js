@@ -141,6 +141,22 @@ let addUserToRoom = (allrooms, data, socket) => {
   }
 };
 
+let removeUserFromRoom = (allrooms, socket) => {
+  // find the user
+  for(let room of allrooms){
+    let findUser = room.users.findIndex((element, index, array) => {
+      return element.socketID === socket.id ? true : false
+    });
+
+    if(findUser > -1){
+      // disconnect
+      socket.leave(room.roomID);
+      // delete user from room's user list
+      room.users.splice(findUser, 1);
+      return room;
+    }
+  }
+};
 
 module.exports = {
   route,
@@ -151,5 +167,6 @@ module.exports = {
   findRoomByName,
   findRoomById,
   randomHex,
-  addUserToRoom
+  addUserToRoom,
+  removeUserFromRoom
 };

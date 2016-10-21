@@ -6,6 +6,7 @@
 	<link rel="stylesheet" href="/css/chatroomStyles.css">
 	<script src="/js/jquery-2.1.4.min.js"></script>
 	<script src="/socket.io/socket.io.js"></script>
+	<script src="https://widget.cloudinary.com/global/all.js"></script>
 	<script>
 		'use strict';
 		$(() => {
@@ -14,6 +15,9 @@
 			let user = '<%= user.fullName %>';
 			let userPic = '<%= user.profilePic %>';
 			let chatUsers = $('.chatUsers');
+			let chatInput = $("input[name='userInput']");
+			let chatMessagesDiv = $(".chatMessages");
+			let filePicker = $('#uploadFile');
 
 			socket.on('connect', () => {
 				socket.emit('join', {
@@ -40,7 +44,62 @@
 				}
 				chatUsers.html('').html(userListData);
 			});
-		})
+
+			//update feed
+			let updateFeed = (userPic, message) => {
+				let template = `<div class="chatBlock">
+									<div class="userPic"><img src="${userPic}"></div>
+									<div class="chatMsg">${message}</div>
+								</div>`;
+				// prepend to show new message on the top
+				$(template).hide().prependTo(chatMessagesDiv).slideDown(200);
+			};
+
+			// listen to enter key and emit send message event
+			chatInput.on('keyup', function (event) {
+				event.preventDefault();
+				let messageField = $(this);
+				if(event.which === 13 && messageField.val() !== ''){
+					socket.emit('newMessage', {
+						roomID,
+						user,
+						userPic,
+						message: messageField.val()
+					});
+					// update the local feed
+					updateFeed(userPic, messageField.val());
+					messageField.val('');
+				}
+			});
+
+			// listen to server event and update feed
+			socket.on('inMessage', data => {
+				let parsedData = JSON.parse(data);
+				updateFeed(parsedData.userPic, parsedData.message);
+			});
+
+			//photo button event listener
+			filePicker.on('click', function (event) {
+				cloudinary.openUploadWidget({
+					cloud_name: 'dozdqldrm',
+					upload_preset: 'ewqlcqvt',
+				}, (error, result) => {
+					if (!error){
+						let tmp = '';
+						for(let img of result){
+							tmp += `<img src="${img.url}">`;
+						}
+						updateFeed(userPic, tmp);
+						socket.emit('newMessage', {
+							roomID,
+							user,
+							userPic,
+							message: tmp
+						});
+					}
+				});
+			})
+		});
 	</script>
 </head>
 <body>
@@ -58,10 +117,7 @@
 			<div class="chatMessagesPanel">
 				<div class="chatMessages">
 				<!-- Loop this for chat messages -->
-				<div class="chatBlock">
-					<div class="userPic"><img src="/img/user.jpg"></div>
-					<div class="chatMsg">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Deleniti perferendis eius aut nesciunt necessitatibus ad nulla, qui sequi, id nam. Possimus odit aut nisi veritatis amet distinctio id officiis ipsam!</div>
-				</div>					
+
 				<!-- loop end -->
 				</div>
 				<div class="typePanel">
