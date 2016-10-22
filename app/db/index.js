@@ -2,10 +2,11 @@
 
 const config = require('../config');
 const Mongoose = require('mongoose').connect(config.dbURI);
+const logger = require('../logger');
 
 // Log out error if connection fails
 Mongoose.connection.on('error', error => {
-    console.error('Mongoose DB Error: ', error);
+    logger.log('error', 'Mongoose DB Error: ' + error);
 });
 
 // Create Schema

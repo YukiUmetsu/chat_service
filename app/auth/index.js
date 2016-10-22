@@ -5,6 +5,7 @@ const config = require('../config');
 const FacebookStrategy = require('passport-facebook').Strategy;
 const TwitterStrategy = require('passport-twitter').Strategy;
 const helper = require('../helpers');
+const logger = require('../logger');
 
 module.exports = () => {
   // Store unique user _id from mongodb to session
@@ -16,7 +17,7 @@ module.exports = () => {
     // find user using the _id
     helper.findById(id)
       .then(user => done(null, user))
-      .catch(error => console.log('error desirializing user', error));
+      .catch(error => logger.log('error', 'error desirializing user' + error));
   });
 
 
@@ -32,11 +33,11 @@ module.exports = () => {
           // create a user and return
           helper.createNewUser(profile)
             .then(newChatUser => done(null, newChatUser))
-            .catch(error => console.log('Error, creating a new user: ', error));
+            .catch(error => logger.log('error', 'Error, creating a new user: ' + error));
         }
       });
   };
 
   passport.use(new FacebookStrategy(config.fb, authProcessor));
   passport.use(new TwitterStrategy(config.twitter, authProcessor));
-}
+};

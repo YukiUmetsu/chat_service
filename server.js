@@ -13,6 +13,14 @@ app.use(chatCat.session);
 
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(require('morgan')('combined', {
+  stream: {
+    write: message => {
+      // write to logs.
+      chatCat.logger.log('info', message);
+    }
+  }
+}));
 // Include Router from /app/index
 app.use('/', chatCat.router);
 
